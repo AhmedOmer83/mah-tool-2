@@ -1,0 +1,115 @@
+/* General Container Styling */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* For Side-by-Side Text Areas */
+.text-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: 20px 0;
+}
+
+/* Text Areas for Source and Translated Text */
+.text-area {
+    width: 45%; /* Ensure each text area takes up almost half the width */
+    margin: 0 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    height: 300px;
+    overflow-y: auto; /* Allow scrolling when content overflows */
+    font-size: 16px;
+    white-space: pre-wrap; /* Preserve formatting */
+}
+
+/* Header inside text areas for label and minimize button */
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Styling for the minimize/maximize buttons */
+.header button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.header button:hover {
+    background-color: #0056b3;
+}
+
+/* Controls Styling */
+.controls {
+    margin: 20px;
+}
+
+/* Button Styling */
+button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #28a745; /* Green color for the Start/Stop button */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Button Container for Start/Stop and Clear buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Clear Button Styling */
+button#clearButton {
+    background-color: #dc3545; /* Red color for the Clear button */
+    margin-left: 15px;
+}
+
+button#clearButton:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+
+/* Language Selection Dropdowns */
+select {
+    padding: 10px;
+    font-size: 16px;
+    margin: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    background-color: #fff;
+    transition: border 0.3s ease;
+}
+
+select:focus {
+    border-color: #28a745;
+}
+
+/* Styling for the formatted NER text */
+.formatted-text span {
+    font-weight: bold;
+    background-color: lightyellow;
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: inherit; /* Ensure the assigned color for entities is applied */
+}

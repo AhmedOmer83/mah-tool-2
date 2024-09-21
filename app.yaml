@@ -1,0 +1,9 @@
+runtime: python39  # Using Python 3.9
+entrypoint: gunicorn -b :$PORT app:app  # Tell Google App Engine to run the Flask app using Gunicorn
+
+handlers:
+  - url: /static
+    static_dir: static
+
+  - url: /.*
+    script: auto

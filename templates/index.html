@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Translation and Named Entity Recognition</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="container">
+    <!-- Source and Translated Text Areas Side by Side -->
+    <div class="text-container">
+        <!-- Source Text -->
+        <div class="text-area" id="sourceTextContainer">
+            <div class="header">
+                <label for="sourceText">Source Text (Formatted):</label>
+                <button onclick="toggleVisibility('sourceTextContainer', 'sourceText')">Hide</button>
+            </div>
+            <div id="sourceText" class="formatted-text"></div>
+        </div>
+
+        <!-- Translated Text -->
+        <div class="text-area" id="translatedTextContainer">
+            <div class="header">
+                <label for="translatedText">Translated Text (Formatted):</label>
+                <button onclick="toggleVisibility('translatedTextContainer', 'translatedText')">Hide</button>
+            </div>
+            <div id="translatedText" class="formatted-text"></div>
+        </div>
+    </div>
+
+    <!-- Language Selection and Control -->
+    <div class="controls">
+        <label for="sourceLanguage">Source Language:</label>
+        <select id="sourceLanguage">
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="es">Spanish</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ar">Arabic</option>
+        </select>
+
+        <label for="targetLanguage">Target Language:</label>
+        <select id="targetLanguage">
+            <option value="fr">French</option>
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ar">Arabic</option>
+        </select>
+    </div>
+
+    <!-- Buttons at the bottom -->
+    <div class="button-container">
+        <button id="startStopButton" onclick="toggleRecording()">Start</button>
+        <button id="clearButton" onclick="clearTextAreas()">Clear</button>
+    </div>
+</div>
+<script>
+    let isRecording = false;
+    let recognition;
+    let finalTranscript = '';  // Store the final transcript
+    let interimTranscript = '';  // Temporarily store interim results
+
+    function toggleRecording() {
+        const button = document.getElementById('startStopButton');
+        if (isRecording) {
+            stopRecording();
+            button.textContent = 'Start';
+        } else {
+            startRecording();
+            button.textContent = 'Stop';
+        }
+        isRecording = !isRecording;
+    }
+
+    function startRecording() {
+        const sourceLanguage = document.getElementById('sourceLanguage').value;
+        const targetLanguage = document.getElementById('targetLanguage').value;
+
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Your browser doesn't support speech recognition.");
+            return;
+        }
+
+        recognition = new webkitSpeechRecognition();
+        recognition.lang = sourceLanguage;
+        recognition.continuous = true;  // Keep recording until stopped
+        recognition.interimResults = true;  // Show partial results
+
+        recognition.onresult = function(event) {
+            interimTranscript = '';  // Clear interim transcript each time
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    // Add finalized text to final transcript
+                    finalTranscript += event.results[i][0].transcript + ' ';
+                } else {
+                    // Add interim results to interim transcript
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            // Send interim and final transcript for real-time translation and NER
+            const combinedTranscript = finalTranscript + interimTranscript;
+            processNERAndTranslation(combinedTranscript, sourceLanguage, targetLanguage);
+        };
+
+        recognition.start();
+        console.log("Recording started.");
+    }
+
+    function stopRecording() {
+        if (recognition) {
+            recognition.stop();
+            console.log("Recording stopped.");
+        }
+    }
+
+    // Send real-time NER and translation request to backend
+    async function processNERAndTranslation(text, sourceLanguage, targetLanguage) {
+        const response = await fetch('/process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text,
+                sourceLanguage: sourceLanguage,
+                targetLanguage: targetLanguage
+            })
+        });
+
+        const data = await response.json();
+
+        // Update the source text area with real-time NER highlights
+        document.getElementById('sourceText').innerHTML = data.sourceText;
+
+        // Update the translated text with real-time NER highlights
+        document.getElementById('translatedText').innerHTML = data.translatedText;
+    }
+
+    function clearTextAreas() {
+        document.getElementById('sourceText').innerHTML = '';
+        document.getElementById('translatedText').innerHTML = '';
+        finalTranscript = '';  // Clear final transcript
+        interimTranscript = '';  // Clear interim transcript
+    }
+
+    function toggleVisibility(containerId, contentId) {
+        const container = document.getElementById(containerId);
+        const content = document.getElementById(contentId);
+        const button = container.querySelector("button");
+
+        if (content.style.display === "none") {
+            content.style.display = "block";
+            button.textContent = "Hide";
+        } else {
+            content.style.display = "none";
+            button.textContent = "Show";
+        }
+    }
+</script>
+
+</body>
+</html>
