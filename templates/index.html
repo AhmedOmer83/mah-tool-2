@@ -60,6 +60,7 @@
         <button id="clearButton" onclick="clearTextAreas()">Clear</button>
     </div>
 </div>
+
 <script>
     let isRecording = false;
     let recognition;
@@ -97,17 +98,21 @@
 
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 if (event.results[i].isFinal) {
-                    // Add finalized text to final transcript
+                    // Only add finalized text to final transcript
                     finalTranscript += event.results[i][0].transcript + ' ';
                 } else {
-                    // Add interim results to interim transcript
+                    // Interim results are stored in interimTranscript but not permanently added
                     interimTranscript += event.results[i][0].transcript;
                 }
             }
 
-            // Send interim and final transcript for real-time translation and NER
-            const combinedTranscript = finalTranscript + interimTranscript;
-            processNERAndTranslation(combinedTranscript, sourceLanguage, targetLanguage);
+            // Display the combined transcript (final + interim)
+            document.getElementById('sourceText').innerHTML = finalTranscript + interimTranscript;
+
+            // Process only finalized text for translation
+            if (finalTranscript.trim() !== '') {
+                processText(finalTranscript.trim(), sourceLanguage, targetLanguage);
+            }
         };
 
         recognition.start();
@@ -121,8 +126,7 @@
         }
     }
 
-    // Send real-time NER and translation request to backend
-    async function processNERAndTranslation(text, sourceLanguage, targetLanguage) {
+    async function processText(text, sourceLanguage, targetLanguage) {
         const response = await fetch('/process', {
             method: 'POST',
             headers: {
@@ -137,10 +141,6 @@
 
         const data = await response.json();
 
-        // Update the source text area with real-time NER highlights
-        document.getElementById('sourceText').innerHTML = data.sourceText;
-
-        // Update the translated text with real-time NER highlights
         document.getElementById('translatedText').innerHTML = data.translatedText;
     }
 
