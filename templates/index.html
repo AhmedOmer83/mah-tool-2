@@ -8,25 +8,23 @@
 </head>
 <body>
 <div class="container">
-    <!-- Source and Translated Text Areas Side by Side -->
+    <!-- Aligned Sentences Table -->
     <div class="text-container">
-        <!-- Source Text -->
-        <div class="text-area" id="sourceTextContainer">
-            <div class="header">
-                <label for="sourceText">Source Text (Formatted):</label>
-                <button onclick="toggleVisibility('sourceTextContainer', 'sourceText')">Hide</button>
-            </div>
-            <div id="sourceText" class="formatted-text"></div>
-        </div>
-
-        <!-- Translated Text -->
-        <div class="text-area" id="translatedTextContainer">
-            <div class="header">
-                <label for="translatedText">Translated Text (Formatted):</label>
-                <button onclick="toggleVisibility('translatedTextContainer', 'translatedText')">Hide</button>
-            </div>
-            <div id="translatedText" class="formatted-text"></div>
-        </div>
+        <table id="alignedSentences">
+            <thead>
+            <tr>
+                <th>Source Text
+                    <button id="toggleTranscriptionsButton" class="toggle-header-btn" onclick="toggleTranscriptions()">Hide Transcriptions</button>
+                </th>
+                <th>Translated Text
+                    <button id="toggleTranslationsButton" class="toggle-header-btn" onclick="toggleTranslations()">Hide Translations</button>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Dynamic rows will be appended here -->
+            </tbody>
+        </table>
     </div>
 
     <!-- Language Selection and Control -->
@@ -62,56 +60,60 @@
 </div>
 
 <script>
+    let recognition;  // Declare the recognition object globally
     let isRecording = false;
-    let recognition;
-    let finalTranscript = '';  // Store the final transcript
-    let interimTranscript = '';  // Temporarily store interim results
+    let transcriptionsVisible = true;
+    let translationsVisible = true;
 
     function toggleRecording() {
         const button = document.getElementById('startStopButton');
         if (isRecording) {
             stopRecording();
-            button.textContent = 'Start';
+            button.textContent = 'Start';  // Update button text to "Start"
         } else {
             startRecording();
-            button.textContent = 'Stop';
+            button.textContent = 'Stop';  // Update button text to "Stop"
         }
-        isRecording = !isRecording;
+        isRecording = !isRecording;  // Toggle the recording state
     }
 
     function startRecording() {
         const sourceLanguage = document.getElementById('sourceLanguage').value;
-        const targetLanguage = document.getElementById('targetLanguage').value;
 
         if (!('webkitSpeechRecognition' in window)) {
             alert("Your browser doesn't support speech recognition.");
             return;
         }
 
+        // Initialize webkitSpeechRecognition
         recognition = new webkitSpeechRecognition();
         recognition.lang = sourceLanguage;
         recognition.continuous = true;  // Keep recording until stopped
-        recognition.interimResults = true;  // Show partial results
+        recognition.interimResults = false;  // Only process final results
 
         recognition.onresult = function(event) {
-            interimTranscript = '';  // Clear interim transcript each time
+            let newText = '';  // Store the new text
 
+            // Process the recognized results
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 if (event.results[i].isFinal) {
-                    // Only add finalized text to final transcript
-                    finalTranscript += event.results[i][0].transcript + ' ';
-                } else {
-                    // Interim results are stored in interimTranscript but not permanently added
-                    interimTranscript += event.results[i][0].transcript;
+                    newText += event.results[i][0].transcript;
                 }
             }
 
-            // Display the combined transcript (final + interim)
-            document.getElementById('sourceText').innerHTML = finalTranscript + interimTranscript;
+            if (newText.trim()) {
+                console.log("Recognized text:", newText);  // Log the new text
+                processText(newText, sourceLanguage, document.getElementById('targetLanguage').value);
+            }
+        };
 
-            // Process only finalized text for translation
-            if (finalTranscript.trim() !== '') {
-                processText(finalTranscript.trim(), sourceLanguage, targetLanguage);
+        recognition.onerror = function(event) {
+            console.error("Speech recognition error detected: " + event.error);
+        };
+
+        recognition.onend = function() {
+            if (isRecording) {
+                recognition.start();  // Restart recognition if it was stopped unexpectedly
             }
         };
 
@@ -140,31 +142,53 @@
         });
 
         const data = await response.json();
+        appendToTable('alignedSentences', data.sentencePairs);
+    }
 
-        document.getElementById('translatedText').innerHTML = data.translatedText;
+    function appendToTable(tableId, sentencePairs) {
+        const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+        // Instead of clearing the table, append the new rows
+        sentencePairs.forEach(pair => {
+            const newRow = tableBody.insertRow();
+
+            const sourceCell = newRow.insertCell(0);
+            const translationCell = newRow.insertCell(1);
+
+            // Make both cells editable
+            sourceCell.contentEditable = true;
+            translationCell.contentEditable = true;
+
+            sourceCell.innerHTML = pair.source;
+            translationCell.innerHTML = pair.translation;
+        });
+    }
+
+    function toggleTranscriptions() {
+        const transcriptions = document.querySelectorAll('#alignedSentences td:nth-child(1)');
+        transcriptions.forEach(td => {
+            td.style.visibility = transcriptionsVisible ? 'hidden' : 'visible';
+        });
+        transcriptionsVisible = !transcriptionsVisible;
+
+        const button = document.getElementById('toggleTranscriptionsButton');
+        button.textContent = transcriptionsVisible ? 'Hide Transcriptions' : 'Show Transcriptions';
+    }
+
+    function toggleTranslations() {
+        const translations = document.querySelectorAll('#alignedSentences td:nth-child(2)');
+        translations.forEach(td => {
+            td.style.visibility = translationsVisible ? 'hidden' : 'visible';
+        });
+        translationsVisible = !translationsVisible;
+
+        const button = document.getElementById('toggleTranslationsButton');
+        button.textContent = translationsVisible ? 'Hide Translations' : 'Show Translations';
     }
 
     function clearTextAreas() {
-        document.getElementById('sourceText').innerHTML = '';
-        document.getElementById('translatedText').innerHTML = '';
-        finalTranscript = '';  // Clear final transcript
-        interimTranscript = '';  // Clear interim transcript
-    }
-
-    function toggleVisibility(containerId, contentId) {
-        const container = document.getElementById(containerId);
-        const content = document.getElementById(contentId);
-        const button = container.querySelector("button");
-
-        if (content.style.display === "none") {
-            content.style.display = "block";
-            button.textContent = "Hide";
-        } else {
-            content.style.display = "none";
-            button.textContent = "Show";
-        }
+        const tableBody = document.getElementById('alignedSentences').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';  // Clear the content
     }
 </script>
-
 </body>
 </html>

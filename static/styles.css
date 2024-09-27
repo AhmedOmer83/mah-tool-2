@@ -1,115 +1,260 @@
-/* General Container Styling */
+/* styles.css */
+
+/* ===========================
+   1. Reset Default Browser Styles
+   =========================== */
+
+/* Remove default margins, paddings, and borders */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===========================
+   2. Base Styles
+   =========================== */
+
+/* Set base font and background for the body */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ===========================
+   3. Container Styling
+   =========================== */
+
+/* Main container styling */
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px;
-    font-family: 'Arial', sans-serif;
-}
-
-/* For Side-by-Side Text Areas */
-.text-container {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    margin: 20px 0;
-}
-
-/* Text Areas for Source and Translated Text */
-.text-area {
-    width: 45%; /* Ensure each text area takes up almost half the width */
-    margin: 0 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
     border-radius: 10px;
-    background-color: #f9f9f9;
-    height: 300px;
-    overflow-y: auto; /* Allow scrolling when content overflows */
-    font-size: 16px;
-    white-space: pre-wrap; /* Preserve formatting */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    width: 90%;
 }
 
-/* Header inside text areas for label and minimize button */
-.header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+/* ===========================
+   4. Aligned Sentences Table Styling
+   =========================== */
+
+/* Wrapper for the table to handle overflow */
+.text-container {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scroll on small screens */
+    margin-bottom: 20px;
 }
 
-/* Styling for the minimize/maximize buttons */
-.header button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+/* Style the aligned sentences table */
+#alignedSentences {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Ensure table is readable on smaller screens */
 }
 
-.header button:hover {
-    background-color: #0056b3;
+/* Table header styling */
+#alignedSentences th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid #ccc;
+    position: sticky; /* Keep headers visible on scroll */
+    top: 0;
+    z-index: 1;
+    position: relative;
 }
 
-/* Controls Styling */
-.controls {
-    margin: 20px;
-}
-
-/* Button Styling */
-button {
-    padding: 15px 30px;
-    font-size: 20px;
-    background-color: #28a745; /* Green color for the Start/Stop button */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+/* Table cell styling */
+#alignedSentences td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    vertical-align: top;
+    background-color: #ffffff;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #218838; /* Darker green on hover */
+/* Style for toggle buttons in table headers */
+.toggle-header-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* Button Container for Start/Stop and Clear buttons */
-.button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+/* Hover effect for toggle buttons */
+.toggle-header-btn:hover {
+    background-color: #0056b3;
 }
 
-/* Clear Button Styling */
-button#clearButton {
-    background-color: #dc3545; /* Red color for the Clear button */
-    margin-left: 15px;
+/* Alternate row coloring for better readability */
+#alignedSentences tr:nth-child(even) td {
+    background-color: #fafafa;
 }
 
-button#clearButton:hover {
-    background-color: #c82333; /* Darker red on hover */
+/* Hover effect for table rows */
+#alignedSentences tr:hover td {
+    background-color: #f1f1f1;
 }
 
-/* Language Selection Dropdowns */
-select {
-    padding: 10px;
-    font-size: 16px;
-    margin: 0 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    outline: none;
-    background-color: #fff;
-    transition: border 0.3s ease;
-}
-
-select:focus {
-    border-color: #28a745;
-}
-
-/* Styling for the formatted NER text */
-.formatted-text span {
+/* Styling for entity-highlighted text within table cells */
+#alignedSentences span {
     font-weight: bold;
     background-color: lightyellow;
     padding: 2px 4px;
     border-radius: 3px;
-    color: inherit; /* Ensure the assigned color for entities is applied */
+    color: inherit; /* Allows inline styles to dictate color */
+}
+
+/* ===========================
+   5. Controls Styling
+   =========================== */
+
+/* Container for language selection controls */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Styling for labels within controls */
+.controls label {
+    margin: 5px 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Styling for select dropdowns within controls */
+.controls select {
+    padding: 8px 12px;
+    font-size: 16px;
+    margin: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border 0.3s ease;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Focus effect for select dropdowns */
+.controls select:focus {
+    border-color: #28a745;
+}
+
+/* ===========================
+   6. Button Styling
+   =========================== */
+
+/* Container for buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between buttons */
+}
+
+/* Base button styling */
+button {
+    padding: 12px 30px;
+    font-size: 18px;
+    background-color: #28a745; /* Green color for Start/Stop button */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect for buttons */
+button:hover {
+    background-color: #218838; /* Darker green on hover */
+    transform: translateY(-2px);
+}
+
+/* Active (pressed) effect for buttons */
+button:active {
+    transform: translateY(0);
+}
+
+/* Specific styling for the Clear button */
+button#clearButton {
+    background-color: #dc3545; /* Red color for Clear button */
+}
+
+/* Hover effect for the Clear button */
+button#clearButton:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+
+/* ===========================
+   7. Responsive Design
+   =========================== */
+
+/* Adjust layout for screens smaller than 768px */
+@media (max-width: 768px) {
+    /* Stack controls vertically */
+    .controls {
+        flex-direction: column;
+    }
+
+    /* Adjust label and select margins */
+    .controls label,
+    .controls select {
+        margin: 5px 0;
+    }
+
+    /* Reduce padding and font size in table cells */
+    #alignedSentences th,
+    #alignedSentences td {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    /* Adjust button sizes */
+    button {
+        padding: 10px 25px;
+        font-size: 16px;
+    }
+}
+
+/* ===========================
+   8. Additional Enhancements
+   =========================== */
+
+/* Smooth transitions for table row background changes */
+#alignedSentences tr td {
+    transition: background-color 0.3s ease;
+}
+
+/* Ensure the table header stands out */
+#alignedSentences th {
+    background-color: #e9ecef;
+    color: #343a40;
+}
+
+/* Improved visibility for selected options in dropdowns */
+.controls select option {
+    padding: 10px;
+}
+
+/* Cursor pointer for table rows */
+#alignedSentences tr {
+    cursor: default;
 }
