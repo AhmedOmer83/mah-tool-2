@@ -30,26 +30,10 @@
     <!-- Language Selection and Control -->
     <div class="controls">
         <label for="sourceLanguage">Source Language:</label>
-        <select id="sourceLanguage">
-            <option value="en">English</option>
-            <option value="fr">French</option>
-            <option value="es">Spanish</option>
-            <option value="de">German</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
-            <option value="ar">Arabic</option>
-        </select>
+        <select id="sourceLanguage"></select>
 
         <label for="targetLanguage">Target Language:</label>
-        <select id="targetLanguage">
-            <option value="fr">French</option>
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
-            <option value="de">German</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
-            <option value="ar">Arabic</option>
-        </select>
+        <select id="targetLanguage"></select>
     </div>
 
     <!-- Buttons at the bottom -->
@@ -60,6 +44,138 @@
 </div>
 
 <script>
+    const supportedLanguages = {
+        'af': 'Afrikaans',
+        'sq': 'Albanian',
+        'am': 'Amharic',
+        'ar': 'Arabic',
+        'hy': 'Armenian',
+        'az': 'Azerbaijani',
+        'eu': 'Basque',
+        'be': 'Belarusian',
+        'bn': 'Bengali',
+        'bs': 'Bosnian',
+        'bg': 'Bulgarian',
+        'ca': 'Catalan',
+        'ceb': 'Cebuano',
+        'zh': 'Chinese',
+        'zh-CN': 'Chinese (Simplified)',
+        'zh-TW': 'Chinese (Traditional)',
+        'hr': 'Croatian',
+        'cs': 'Czech',
+        'da': 'Danish',
+        'nl': 'Dutch',
+        'en': 'English',
+        'eo': 'Esperanto',
+        'et': 'Estonian',
+        'tl': 'Filipino',
+        'fi': 'Finnish',
+        'fr': 'French',
+        'fy': 'Frisian',
+        'gl': 'Galician',
+        'ka': 'Georgian',
+        'de': 'German',
+        'el': 'Greek',
+        'gu': 'Gujarati',
+        'ht': 'Haitian Creole',
+        'ha': 'Hausa',
+        'haw': 'Hawaiian',
+        'he': 'Hebrew',
+        'hi': 'Hindi',
+        'hmn': 'Hmong',
+        'hu': 'Hungarian',
+        'is': 'Icelandic',
+        'ig': 'Igbo',
+        'id': 'Indonesian',
+        'ga': 'Irish',
+        'it': 'Italian',
+        'ja': 'Japanese',
+        'jw': 'Javanese',
+        'kn': 'Kannada',
+        'kk': 'Kazakh',
+        'km': 'Khmer',
+        'rw': 'Kinyarwanda',
+        'ko': 'Korean',
+        'ku': 'Kurdish',
+        'ky': 'Kyrgyz',
+        'lo': 'Lao',
+        'la': 'Latin',
+        'lv': 'Latvian',
+        'lt': 'Lithuanian',
+        'lb': 'Luxembourgish',
+        'mk': 'Macedonian',
+        'mg': 'Malagasy',
+        'ms': 'Malay',
+        'ml': 'Malayalam',
+        'mt': 'Maltese',
+        'mi': 'Maori',
+        'mr': 'Marathi',
+        'mn': 'Mongolian',
+        'my': 'Myanmar (Burmese)',
+        'ne': 'Nepali',
+        'no': 'Norwegian',
+        'ny': 'Nyanja (Chichewa)',
+        'or': 'Odia (Oriya)',
+        'ps': 'Pashto',
+        'fa': 'Persian',
+        'pl': 'Polish',
+        'pt': 'Portuguese',
+        'pa': 'Punjabi',
+        'ro': 'Romanian',
+        'ru': 'Russian',
+        'sm': 'Samoan',
+        'gd': 'Scots Gaelic',
+        'sr': 'Serbian',
+        'st': 'Sesotho',
+        'sn': 'Shona',
+        'sd': 'Sindhi',
+        'si': 'Sinhala',
+        'sk': 'Slovak',
+        'sl': 'Slovenian',
+        'so': 'Somali',
+        'es': 'Spanish',
+        'su': 'Sundanese',
+        'sw': 'Swahili',
+        'sv': 'Swedish',
+        'tg': 'Tajik',
+        'ta': 'Tamil',
+        'tt': 'Tatar',
+        'te': 'Telugu',
+        'th': 'Thai',
+        'tr': 'Turkish',
+        'tk': 'Turkmen',
+        'uk': 'Ukrainian',
+        'ur': 'Urdu',
+        'ug': 'Uyghur',
+        'uz': 'Uzbek',
+        'vi': 'Vietnamese',
+        'cy': 'Welsh',
+        'xh': 'Xhosa',
+        'yi': 'Yiddish',
+        'yo': 'Yoruba',
+        'zu': 'Zulu'
+    };
+
+    // Populate the language select options dynamically
+    function populateLanguageOptions() {
+        const sourceLanguageSelect = document.getElementById('sourceLanguage');
+        const targetLanguageSelect = document.getElementById('targetLanguage');
+
+        for (const [code, language] of Object.entries(supportedLanguages)) {
+            const optionSource = document.createElement('option');
+            optionSource.value = code;
+            optionSource.textContent = language;
+            sourceLanguageSelect.appendChild(optionSource);
+
+            const optionTarget = document.createElement('option');
+            optionTarget.value = code;
+            optionTarget.textContent = language;
+            targetLanguageSelect.appendChild(optionTarget);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', populateLanguageOptions);
+
     let recognition;  // Declare the recognition object globally
     let isRecording = false;
     let transcriptionsVisible = true;
