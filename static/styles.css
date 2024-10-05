@@ -50,7 +50,8 @@ body {
 /* Wrapper for the table to handle overflow */
 .text-container {
     width: 100%;
-    overflow-x: auto; /* Enable horizontal scroll on small screens */
+    height: 300px; /* Set a fixed height for the table */
+    overflow-y: auto; /* Enable vertical scrolling */
     margin-bottom: 20px;
 }
 
@@ -258,3 +259,10 @@ button#clearButton:hover {
 #alignedSentences tr {
     cursor: default;
 }
+/* Styling for entity-highlighted text */
+.entity {
+    color: blue;  /* Set entity text to blue */
+    font-weight: bold;
+    border-bottom: 1px dotted blue;
+}
+
