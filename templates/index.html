@@ -3,31 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speech Translation and Named Entity Recognition</title>
+    <title>Real-Time Speech Translation and NER System</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 <div class="container">
-    <!-- Aligned Sentences Table -->
-    <div class="text-container">
-        <table id="alignedSentences">
-            <thead>
-            <tr>
-                <th>Source Text
-                    <button id="toggleTranscriptionsButton" class="toggle-header-btn" onclick="toggleTranscriptions()">Hide Transcriptions</button>
-                </th>
-                <th>Translated Text
-                    <button id="toggleTranslationsButton" class="toggle-header-btn" onclick="toggleTranslations()">Hide Translations</button>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Dynamic rows will be appended here -->
-            </tbody>
-        </table>
-    </div>
+    <h1>Real-Time Speech Translation and NER System</h1>
 
-    <!-- Language Selection and Control -->
     <div class="controls">
         <label for="sourceLanguage">Source Language:</label>
         <select id="sourceLanguage">
@@ -52,7 +34,7 @@
             <option value="cs">Czech</option>
             <option value="da">Danish</option>
             <option value="nl">Dutch</option>
-            <option value="en" selected>English</option> <!-- Default set to English -->
+            <option value="en" selected>English</option>
             <option value="eo">Esperanto</option>
             <option value="et">Estonian</option>
             <option value="tl">Filipino</option>
@@ -232,7 +214,7 @@
             <option value="sk">Slovak</option>
             <option value="sl">Slovenian</option>
             <option value="so">Somali</option>
-            <option value="es" selected>Spanish</option> <!-- Default set to Spanish -->
+            <option value="es" selected>Spanish</option>
             <option value="su">Sundanese</option>
             <option value="sw">Swahili</option>
             <option value="sv">Swedish</option>
@@ -256,7 +238,23 @@
         </select>
     </div>
 
-    <!-- Buttons at the bottom -->
+    <div class="text-container">
+        <table id="alignedSentences">
+            <thead>
+            <tr>
+                <th>Source Text
+                    <button id="toggleTranscriptionsButton" class="toggle-header-btn" onclick="toggleTranscriptions()">Hide Transcriptions</button>
+                </th>
+                <th>Translated Text
+                    <button id="toggleTranslationsButton" class="toggle-header-btn" onclick="toggleTranslations()">Hide Translations</button>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
     <div class="button-container">
         <button id="startStopButton" onclick="toggleRecording()">Start</button>
         <button id="clearButton" onclick="clearTextAreas()">Clear</button>
@@ -264,7 +262,7 @@
 </div>
 
 <script>
-    let recognition;  // Declare the recognition object globally
+    let recognition;
     let isRecording = false;
     let transcriptionsVisible = true;
     let translationsVisible = true;
@@ -273,12 +271,14 @@
         const button = document.getElementById('startStopButton');
         if (isRecording) {
             stopRecording();
-            button.textContent = 'Start';  // Update button text to "Start"
+            button.textContent = 'Start';
+            button.style.backgroundColor = '#28a745';
         } else {
             startRecording();
-            button.textContent = 'Stop';  // Update button text to "Stop"
+            button.textContent = 'Stop';
+            button.style.backgroundColor = '#dc3545';
         }
-        isRecording = !isRecording;  // Toggle the recording state
+        isRecording = !isRecording;
     }
 
     function startRecording() {
@@ -289,21 +289,18 @@
             return;
         }
 
-        // Initialize webkitSpeechRecognition
         recognition = new webkitSpeechRecognition();
         recognition.lang = sourceLanguage;
-        recognition.continuous = true;  // Keep recording until stopped
-        recognition.interimResults = true;  // Show interim results for real-time display
+        recognition.continuous = true;
+        recognition.interimResults = true;
 
-        // Track the index of the current row for updating
         let currentRowIndex = -1;
-        let previousText = '';  // To store previous interim text
+        let previousText = '';
 
         recognition.onresult = function(event) {
-            let interimText = '';  // Store the interim results
-            let finalText = '';  // Store the final results
+            let interimText = '';
+            let finalText = '';
 
-            // Process the recognized results
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 if (event.results[i].isFinal) {
                     finalText += event.results[i][0].transcript;
@@ -312,99 +309,40 @@
                 }
             }
 
-            // Display interim results in real-time by appending to previous text only if changed
             if (interimText.trim() && interimText !== previousText) {
-                if (currentRowIndex === -1) {  // If no row exists, create a new one
+                if (currentRowIndex === -1) {
                     currentRowIndex = appendToTable('alignedSentences', [{source: interimText, translation: '...'}], true);
-                } else {  // Update the existing row with the interim text
+                } else {
                     updateTableRow('alignedSentences', currentRowIndex, interimText, '...');
                 }
-                previousText = interimText;  // Update the stored interim text
+                processText(interimText, sourceLanguage, document.getElementById('targetLanguage').value, currentRowIndex, false);
+                previousText = interimText;
             }
 
-            // If a final result is available, update the row with finalised text
             if (finalText.trim()) {
-                console.log("Recognized text:", finalText);  // Log the new text
-                processText(finalText, sourceLanguage, document.getElementById('targetLanguage').value, currentRowIndex);
-                currentRowIndex = -1;  // Reset index after final result
-                previousText = '';  // Clear previous interim text
+                processText(finalText, sourceLanguage, document.getElementById('targetLanguage').value, currentRowIndex, true);
+                currentRowIndex = -1;
+                previousText = '';
             }
         };
 
         recognition.onerror = function(event) {
-            console.error("Speech recognition error detected: " + event.error);
-        };
-
-        recognition.onend = function() {
-            if (isRecording) {
-                recognition.start();  // Restart recognition if it was stopped unexpectedly
-            }
+            console.error("Speech recognition error detected:", event.error);
         };
 
         recognition.start();
-        console.log("Recording started.");
     }
 
     function stopRecording() {
         if (recognition) {
             recognition.stop();
-            console.log("Recording stopped.");
-        }
-    }
-
-    async function processText(text, sourceLanguage, targetLanguage, rowIndex) {
-        const response = await fetch('/process', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                text: text,
-                sourceLanguage: sourceLanguage,
-                targetLanguage: targetLanguage
-            })
-        });
-
-        const data = await response.json();
-
-        // Use innerHTML to render the HTML-formatted source and translation text
-        updateTableRow('alignedSentences', rowIndex, data.sentencePairs[0].source, data.sentencePairs[0].translation);
-    }
-
-    function appendToTable(tableId, sentencePairs, isInterim = false) {
-        const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
-        let rowIndex = tableBody.rows.length;  // Track the row index
-
-        sentencePairs.forEach(pair => {
-            const newRow = tableBody.insertRow();
-
-            const sourceCell = newRow.insertCell(0);
-            const translationCell = newRow.insertCell(1);
-
-            // Make both cells editable
-            sourceCell.contentEditable = true;
-            translationCell.contentEditable = true;
-
-            sourceCell.innerHTML = pair.source + (isInterim ? " (interim)" : "");
-            translationCell.innerHTML = pair.translation + (isInterim ? " (processing)" : "");
-        });
-
-        return rowIndex;
-    }
-
-    function updateTableRow(tableId, rowIndex, sourceText, translationText) {
-        const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
-        if (tableBody.rows[rowIndex]) {
-            // Use innerHTML instead of innerText to apply the <span> tags for entities
-            tableBody.rows[rowIndex].cells[0].innerHTML = sourceText;
-            tableBody.rows[rowIndex].cells[1].innerHTML = translationText;
         }
     }
 
     function toggleTranscriptions() {
         const transcriptions = document.querySelectorAll('#alignedSentences td:nth-child(1)');
         transcriptions.forEach(td => {
-            td.style.visibility = transcriptionsVisible ? 'hidden' : 'visible';
+            td.style.display = transcriptionsVisible ? 'none' : 'table-cell';
         });
         transcriptionsVisible = !transcriptionsVisible;
 
@@ -415,7 +353,7 @@
     function toggleTranslations() {
         const translations = document.querySelectorAll('#alignedSentences td:nth-child(2)');
         translations.forEach(td => {
-            td.style.visibility = translationsVisible ? 'hidden' : 'visible';
+            td.style.display = translationsVisible ? 'none' : 'table-cell';
         });
         translationsVisible = !translationsVisible;
 
@@ -425,7 +363,47 @@
 
     function clearTextAreas() {
         const tableBody = document.getElementById('alignedSentences').getElementsByTagName('tbody')[0];
-        tableBody.innerHTML = '';  // Clear the content
+        tableBody.innerHTML = '';  // Clear the table content
+    }
+
+    async function processText(text, sourceLanguage, targetLanguage, rowIndex, isFinal = false) {
+        const translationUrl = isFinal ? '/process' : '/process_interim';
+        const response = await fetch(translationUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, sourceLanguage, targetLanguage })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            updateTableRow('alignedSentences', rowIndex, data.sentencePairs[0].source, data.sentencePairs[0].translation, isFinal);
+        }
+    }
+
+    function appendToTable(tableId, sentencePairs, isInterim = false) {
+        const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+        let rowIndex = tableBody.rows.length;
+
+        sentencePairs.forEach(pair => {
+            const newRow = tableBody.insertRow();
+            const sourceCell = newRow.insertCell(0);
+            const translationCell = newRow.insertCell(1);
+            sourceCell.contentEditable = true;
+            translationCell.contentEditable = true;
+            sourceCell.innerHTML = pair.source + (isInterim ? " (interim)" : "");
+            translationCell.innerHTML = pair.translation + (isInterim ? " (processing)" : "");
+        });
+
+        return rowIndex;
+    }
+
+    function updateTableRow(tableId, rowIndex, sourceText, translationText, isFinal = false) {
+        const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+        if (tableBody.rows[rowIndex]) {
+            const styleClass = isFinal ? 'final-translation' : 'interim-translation';
+            tableBody.rows[rowIndex].cells[0].innerHTML = `<span class="${styleClass}">${sourceText}</span>`;
+            tableBody.rows[rowIndex].cells[1].innerHTML = `<span class="${styleClass}">${translationText}</span>`;
+        }
     }
 </script>
 </body>

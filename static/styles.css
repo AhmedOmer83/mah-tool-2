@@ -1,268 +1,175 @@
-/* styles.css */
-
-/* ===========================
-   1. Reset Default Browser Styles
-   =========================== */
-
-/* Remove default margins, paddings, and borders */
-*,
-*::before,
-*::after {
+/* Body and Container Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
-/* ===========================
-   2. Base Styles
-   =========================== */
-
-/* Set base font and background for the body */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
+h1 {
+    text-align: center;
     color: #333;
-    line-height: 1.6;
+    margin: 20px 0;
 }
 
-/* ===========================
-   3. Container Styling
-   =========================== */
-
-/* Main container styling */
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 80%;
     margin: 20px auto;
     padding: 20px;
     background-color: #ffffff;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
-    width: 90%;
 }
 
-/* ===========================
-   4. Aligned Sentences Table Styling
-   =========================== */
-
-/* Wrapper for the table to handle overflow */
-.text-container {
-    width: 100%;
-    height: 300px; /* Set a fixed height for the table */
-    overflow-y: auto; /* Enable vertical scrolling */
-    margin-bottom: 20px;
-}
-
-/* Style the aligned sentences table */
-#alignedSentences {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px; /* Ensure table is readable on smaller screens */
-}
-
-/* Table header styling */
-#alignedSentences th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 2px solid #ccc;
-    position: sticky; /* Keep headers visible on scroll */
-    top: 0;
-    z-index: 1;
-    position: relative;
-}
-
-/* Table cell styling */
-#alignedSentences td {
-    border: 1px solid #ddd;
-    padding: 12px 15px;
-    vertical-align: top;
-    background-color: #ffffff;
-    transition: background-color 0.3s ease;
-}
-
-/* Style for toggle buttons in table headers */
-.toggle-header-btn {
-    margin-left: 10px;
-    padding: 5px 10px;
-    font-size: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-/* Hover effect for toggle buttons */
-.toggle-header-btn:hover {
-    background-color: #0056b3;
-}
-
-/* Alternate row coloring for better readability */
-#alignedSentences tr:nth-child(even) td {
-    background-color: #fafafa;
-}
-
-/* Hover effect for table rows */
-#alignedSentences tr:hover td {
-    background-color: #f1f1f1;
-}
-
-/* Styling for entity-highlighted text within table cells */
-#alignedSentences span {
-    font-weight: bold;
-    background-color: lightyellow;
-    padding: 2px 4px;
-    border-radius: 3px;
-    color: inherit; /* Allows inline styles to dictate color */
-}
-
-/* ===========================
-   5. Controls Styling
-   =========================== */
-
-/* Container for language selection controls */
+/* Control Section Styling */
 .controls {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
     margin-bottom: 20px;
 }
 
-/* Styling for labels within controls */
-.controls label {
-    margin: 5px 10px;
-    font-size: 16px;
-    color: #555;
-}
-
-/* Styling for select dropdowns within controls */
 .controls select {
-    padding: 8px 12px;
-    font-size: 16px;
-    margin: 5px 10px;
+    padding: 10px;
+    margin: 0 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     outline: none;
-    transition: border 0.3s ease;
-    background-color: #fff;
-    cursor: pointer;
 }
 
-/* Focus effect for select dropdowns */
-.controls select:focus {
-    border-color: #28a745;
+label {
+    font-weight: bold;
+    margin-right: 5px;
 }
 
-/* ===========================
-   6. Button Styling
-   =========================== */
-
-/* Container for buttons */
+/* Buttons Styling */
 .button-container {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Space between buttons */
+    gap: 20px;
 }
 
-/* Base button styling */
 button {
-    padding: 12px 30px;
-    font-size: 18px;
-    background-color: #28a745; /* Green color for Start/Stop button */
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button#startStopButton {
+    background-color: #28a745; /* Green for start */
+}
+
+button#clearButton {
+    background-color: #dc3545; /* Red for clear */
+}
+
+button#startStopButton:hover,
+button#clearButton:hover {
+    opacity: 0.9;
+}
+
+button#startStopButton:active,
+button#clearButton:active {
+    opacity: 1;
+}
+
+button.toggle-header-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    background-color: #007bff; /* Blue for toggle buttons */
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s;
 }
 
-/* Hover effect for buttons */
-button:hover {
-    background-color: #218838; /* Darker green on hover */
-    transform: translateY(-2px);
+button.toggle-header-btn:hover {
+    background-color: #0056b3;
 }
 
-/* Active (pressed) effect for buttons */
-button:active {
-    transform: translateY(0);
+/* Table Styling */
+.text-container {
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-/* Specific styling for the Clear button */
-button#clearButton {
-    background-color: #dc3545; /* Red color for Clear button */
+#alignedSentences {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-/* Hover effect for the Clear button */
-button#clearButton:hover {
-    background-color: #c82333; /* Darker red on hover */
+#alignedSentences th,
+#alignedSentences td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
 }
 
-/* ===========================
-   7. Responsive Design
-   =========================== */
-
-/* Adjust layout for screens smaller than 768px */
-@media (max-width: 768px) {
-    /* Stack controls vertically */
-    .controls {
-        flex-direction: column;
-    }
-
-    /* Adjust label and select margins */
-    .controls label,
-    .controls select {
-        margin: 5px 0;
-    }
-
-    /* Reduce padding and font size in table cells */
-    #alignedSentences th,
-    #alignedSentences td {
-        padding: 8px 10px;
-        font-size: 14px;
-    }
-
-    /* Adjust button sizes */
-    button {
-        padding: 10px 25px;
-        font-size: 16px;
-    }
-}
-
-/* ===========================
-   8. Additional Enhancements
-   =========================== */
-
-/* Smooth transitions for table row background changes */
-#alignedSentences tr td {
-    transition: background-color 0.3s ease;
-}
-
-/* Ensure the table header stands out */
 #alignedSentences th {
-    background-color: #e9ecef;
-    color: #343a40;
+    background-color: #007bff;
+    color: white;
+    text-align: left;
 }
 
-/* Improved visibility for selected options in dropdowns */
-.controls select option {
-    padding: 10px;
+#alignedSentences tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
-/* Cursor pointer for table rows */
-#alignedSentences tr {
-    cursor: default;
+#alignedSentences tr:hover {
+    background-color: #ddd;
 }
-/* Styling for entity-highlighted text */
+
+#alignedSentences td {
+    word-wrap: break-word;
+}
+
+/* Entity Highlighting */
 .entity {
-    color: blue;  /* Set entity text to blue */
+    color: blue;
     font-weight: bold;
     border-bottom: 1px dotted blue;
 }
 
+/* Interim and Final Text Styling */
+.interim-translation {
+    color: grey;
+    font-style: italic;
+}
+
+.final-translation {
+    color: black;
+    font-weight: bold;
+}
+
+/* Responsive Design for Smaller Screens */
+@media only screen and (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .controls select {
+        width: 80%;
+        margin: 10px 0;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    button {
+        width: 60%;
+        margin: 5px auto;
+    }
+}
