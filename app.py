@@ -1,13 +1,24 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from google.cloud import language_v1, translate_v2
 import threading
+from functools import wraps  # For route protection
 
 # Initialize Flask app
 app = Flask(__name__)
+app.secret_key = 'supersecretkey'  # Needed for session management
 
 # Initialize Google Cloud clients
 language_client = language_v1.LanguageServiceClient()
 translate_client = translate_v2.Client()
+
+# Function to check login status before accessing any route
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session or not session['logged_in']:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Function to get filtered entities based on the required types
 def get_entities(text):
@@ -36,10 +47,31 @@ def translate_text(text, target_language):
     return translation['translatedText']
 
 @app.route('/')
+@login_required
 def home():
     return render_template('index.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username == 'Mahmoud' and password == 'Gaber123456!':
+            session['logged_in'] = True
+            return redirect(url_for('home'))
+        else:
+            error = 'Invalid credentials. Please try again.'
+    return render_template('login.html', error=error)
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
 @app.route('/process', methods=['POST'])
+@login_required
 def process_text():
     data = request.get_json()
     text = data['text']
@@ -65,25 +97,31 @@ def process_text():
     translation_thread.join()
     entity_thread.join()
 
-    # Highlight the entities in the source text
-    highlighted_text = highlight_entities(text, entity_result)
+    if translation_result and entity_result:
+        # Highlight the entities in the source text
+        highlighted_text = highlight_entities(text, entity_result)
 
-    # Extract and highlight entities in the translated text
-    translation_entities = get_entities(translation_result)
-    highlighted_translation = highlight_entities(translation_result, translation_entities)
+        # Extract and highlight entities in the translated text
+        translation_entities = get_entities(translation_result)
+        highlighted_translation = highlight_entities(translation_result, translation_entities)
 
-    return jsonify({
-        "sentencePairs": [{"source": highlighted_text, "translation": highlighted_translation}],
-        "entities": entity_result
-    })
+        return jsonify({
+            "sentencePairs": [{"source": highlighted_text, "translation": highlighted_translation}],
+            "entities": entity_result
+        })
+    else:
+        # Return an error if something went wrong
+        return jsonify({"error": "Failed to process text."}), 500
 
 @app.route('/process_interim', methods=['POST'])
+@login_required
 def process_interim_text():
     data = request.get_json()
     text = data['text']
     source_language = data['sourceLanguage']
     target_language = data['targetLanguage']
     translation_result = translate_text(text, target_language)
+
     return jsonify({
         "sentencePairs": [{"source": text, "translation": translation_result}]
     })

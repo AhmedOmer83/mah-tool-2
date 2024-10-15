@@ -8,6 +8,11 @@
 </head>
 <body>
 <div class="container">
+    <!-- Logout button at the top-right -->
+    <div class="logout-container" style="text-align: right;">
+        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+    </div>
+
     <h1>Real-Time Speech Translation and NER System</h1>
 
     <div class="controls">
@@ -34,7 +39,7 @@
             <option value="cs">Czech</option>
             <option value="da">Danish</option>
             <option value="nl">Dutch</option>
-            <option value="en" selected>English</option>
+            <option value="en" selected>English</option> <!-- Set English as default -->
             <option value="eo">Esperanto</option>
             <option value="et">Estonian</option>
             <option value="tl">Filipino</option>
@@ -214,7 +219,7 @@
             <option value="sk">Slovak</option>
             <option value="sl">Slovenian</option>
             <option value="so">Somali</option>
-            <option value="es" selected>Spanish</option>
+            <option value="es" selected>Spanish</option> <!-- Set Spanish as default target -->
             <option value="su">Sundanese</option>
             <option value="sw">Swahili</option>
             <option value="sv">Swedish</option>
@@ -260,6 +265,24 @@
         <button id="clearButton" onclick="clearTextAreas()">Clear</button>
     </div>
 </div>
+
+<!-- Add some basic styling for the logout button -->
+<style>
+    .logout-button {
+        background-color: #ff4d4d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+        background-color: #ff1a1a;
+    }
+</style>
 
 <script>
     let recognition;
